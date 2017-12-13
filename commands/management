@@ -1,0 +1,68 @@
+## @file   commands/management.py
+##
+## @author Benjamin Williams <bwilliams@lincoln.ac.uk>
+## @brief  Contains functions for checking management only commands.
+##
+
+#Import system modules (required)
+from discord.ext import commands
+import discord
+import random
+import time
+
+import text
+import util.clientmsg;
+from util import check
+
+
+def setup(bot):
+	bot.add_cog(ManagementCommands(bot));
+	
+	
+class ManagementCommands:
+
+	def __init__(self, bot):
+		self.bot = bot;
+	
+	
+	#-------
+	# !exit
+	#-------
+	@commands.command(hidden=True)
+	@check.is_management()
+	async def exit(self):
+	
+		channel_str = ['277845369465864202', '285755874276933632'];
+		channels    = [ self.bot.get_channel(x) for x in channel_str ];
+		
+		for channel in channels:
+			await self.bot.send_message(channel, "I'm leaving now but I'll be back soon");
+			await util.clientmsg.exit(self.bot, channel=channel);
+		
+		await self.bot.logout();
+	
+	
+	#-------
+	# !eval
+	#-------
+	@commands.command(hidden=True)
+	@check.is_management()
+	async def eval(self, evalStr : str):
+	
+		#If we have arguments, show processing message
+		tmp = await util.clientmsg.processing(self.bot);
+		
+		#String to save result to
+		result = "";
+		
+		#Try eval, if it fails show error
+		try:
+			result = eval(evalStr);	
+			
+		#Show error on fail
+		except Exception as e:
+			result = str(e);
+			
+		#Edit message to show answer
+		await self.bot.edit_message(tmp, "**Result:** `%s`" % str(result));
+
