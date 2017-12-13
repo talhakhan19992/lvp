@@ -1,0 +1,19 @@
+import subprocess
+import shlex
+import os
+import webbrowser
+
+def build_latex(str):
+	
+	str = str.replace("\\", "\\\\");
+	str = str.replace("\\", "\\\\");
+	
+	process = subprocess.Popen(shlex.split('bash job.sh \'%s\'' % str));
+	process.wait();
+	
+	webbrowser.open("output1.png");
+	
+	# return bytes-like object..
+	
+str = input("> ");
+build_latex(str);
