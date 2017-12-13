@@ -1,0 +1,77 @@
+Traceback (most recent call last):
+  File "bot.py", line 23, in <module>
+    from commands.regular import RegularCommands
+  File "/root/lwbot-discord/commands/regular.py", line 24, in <module>
+    import datetime, humanize
+ImportError: No module named 'humanize'
+WARNING:MyClient:pool.irc:Unknown command: [exnet.fr.irc.tl] 396 ['LWBotDiscord', 'A0CABC.9E4546.ECE787.2B4DDD', 'is now your displayed host']
+WARNING:MyClient:pool.irc:Unknown command: [exnet.fr.irc.tl] 378 ['LWBotDiscord', 'LWBotDiscord', 'is connecting from lwbotdiscor@178.62.100.74 178.62.100.74']
+WARNING:MyClient:pool.irc:Unknown command: [exnet.fr.irc.tl] 379 ['LWBotDiscord', 'LWBotDiscord', 'is using modes +iwx']
+WARNING:MyClient:pool.irc:Unknown command: [exnet.fr.irc.tl] 310 ['LWBotDiscord', 'NickServ', 'is an irc.tl Service']
+WARNING:MyClient:pool.irc:Unknown command: [exnet.fr.irc.tl] 335 ['LWBotDiscord', 'ILoveTurtles', 'is a bot on irc.tl']
+Ignoring exception in command stats
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/discord/ext/commands/core.py", line 50, in wrapped
+    ret = yield from coro(*args, **kwargs)
+  File "/root/lwbot-discord/commands/regular.py", line 124, in stats
+    data = json.load(body);
+  File "/usr/lib/python3.5/json/__init__.py", line 268, in load
+    parse_constant=parse_constant, object_pairs_hook=object_pairs_hook, **kw)
+  File "/usr/lib/python3.5/json/__init__.py", line 312, in loads
+    s.__class__.__name__))
+TypeError: the JSON object must be str, not 'bytes'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.5/dist-packages/discord/ext/commands/bot.py", line 846, in process_commands
+    yield from command.invoke(ctx)
+  File "/usr/local/lib/python3.5/dist-packages/discord/ext/commands/core.py", line 374, in invoke
+    yield from injected(*ctx.args, **ctx.kwargs)
+  File "/usr/local/lib/python3.5/dist-packages/discord/ext/commands/core.py", line 54, in wrapped
+    raise CommandInvokeError(e) from e
+discord.ext.commands.errors.CommandInvokeError: Command raised an exception: TypeError: the JSON object must be str, not 'bytes'
+WARNING:MyClient:pool.irc:Unknown command: [exnet.fr.irc.tl] 335 ['LWBotDiscord', 'ILikeTurtles', 'is a bot on irc.tl']
+WARNING:MyClient:pool.irc:Unknown command: [exnet.fr.irc.tl] 335 ['LWBotDiscord', 'IHateTurtles', 'is a bot on irc.tl']
+WARNING:MyClient:pool.irc:Unknown command: [exnet.fr.irc.tl] 310 ['LWBotDiscord', 'ChanServ', 'is an irc.tl Service']
+
+    THE CAKE
+               IS A LIE
+
+          *  *  *            
+         *|_*|_*|*_         
+     .-'`|* |* |*| `'-.     
+     |`-............-'|     
+     |                |     
+     \   _  .-.   _   /     
+   ,-|'-' '-'  '-' '-'|-,   
+ /`  \._            _./  `\ 
+ '._    `""""""""""`    _.' 
+    `''--..........--''`    
+
+LWBot: littlewhitey's discord server bot
+[bot token] Mjg0NzYwNTkxNDg1MTA4MjM0.C5Jvrg.imJkhntgU6lKZ3eKGQPNc0316Y4
+
+[status] Creating discord client, connecting & logging in...
+
+[status] Successfully logged in. User details:
+[info] 	username: LWBot
+[info] 	id:       284760591485108234
+
+[status] Connected to littlewhiteys (id: 277845369465864202, owner: blewert)
+[info] Channels for this server:
+[info] 	#music                          - None
+[info] 	#other                          - None
+[info] 	#echo-samp                      - Echo channel for SA-MP.
+[info] 	#samp                           - None
+[info] 	#vcmp                           - For the discussion of littlewhitey's VC-MP server.
+[info] 	#guests                         - The channel for guests
+[info] 	#teenage-mutant-ninja-turtles   - The admin channel for our SA-MP server.
+[info] 	#sa-mp-donators                 - None
+[info] 	#development-samp               - Channel for discussing the development of our SA-MP server.
+[info] 	#test                           - None
+[info] 	#vcmp                           - None
+[info] 	#other                          - For everything else!
+[info] 	#samp                           - For the discussion of littlewhitey's SA-MP server.
+[info] 	#el-banco-corrupto-grande       - This is the channel accessible only to VC-MP admin members.
+[status] All good in the hood! (MainThread)
