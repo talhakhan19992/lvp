@@ -1,0 +1,18 @@
+## @file   commands/check.py
+##
+## @author Benjamin Williams <bwilliams@lincoln.ac.uk>
+## @brief  For checking command permissions.
+##
+
+from discord.ext import commands
+import discord.utils
+
+
+def is_management():
+	return commands.check(lambda ctx: ctx.message.author.top_role.name == "management");
+
+def is_staff():
+	return commands.check(lambda ctx: ctx.message.author.top_role.name == "sa-mp staff");
+
+def is_dev():
+	return commands.check(lambda ctx: ctx.message.author.top_role.name == "sa-mp developer");
