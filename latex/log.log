@@ -1,0 +1,44 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (MiKTeX 2.9.6300 64-bit)
+entering extended mode
+(output.tex
+LaTeX2e <2017-04-15>
+Babel <3.9r> and hyphenation patterns for 75 language(s) loaded.
+("C:\Program Files\MiKTeX 2.9\tex\latex\standalone\standalone.cls"
+Document Class: standalone 2015/07/15 v1.2 Class to compile TeX sub-files stand
+alone
+("C:\Program Files\MiKTeX 2.9\tex\generic\oberdiek\ifluatex.sty")
+("C:\Program Files\MiKTeX 2.9\tex\generic\oberdiek\ifpdf.sty")
+("C:\Program Files\MiKTeX 2.9\tex\generic\ifxetex\ifxetex.sty")
+("C:\Program Files\MiKTeX 2.9\tex\latex\xkeyval\xkeyval.sty"
+("C:\Program Files\MiKTeX 2.9\tex\generic\xkeyval\xkeyval.tex"
+("C:\Program Files\MiKTeX 2.9\tex\generic\xkeyval\xkvutils.tex"
+("C:\Program Files\MiKTeX 2.9\tex\generic\xkeyval\keyval.tex"))))
+("C:\Program Files\MiKTeX 2.9\tex\latex\standalone\standalone.cfg")
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\article.cls"
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+("C:\Program Files\MiKTeX 2.9\tex\latex\base\size10.clo"))
+("C:\Program Files\MiKTeX 2.9\tex\latex\preview\preview.sty"
+("C:\Program Files\MiKTeX 2.9\tex\generic\luatex85\luatex85.sty")
+("C:\Program Files\MiKTeX 2.9\tex\latex\preview\prtightpage.def")))
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsmath.sty"
+For additional information on amsmath, use the `?' option.
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amstext.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsgen.sty"))
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsbsy.sty")
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsmath\amsopn.sty"))
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\amssymb.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\amsfonts.sty"))
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\color.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics-cfg\color.cfg")
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics-def\dvips.def")
+("C:\Program Files\MiKTeX 2.9\tex\latex\graphics\dvipsnam.def"))
+("C:\Program Files\MiKTeX 2.9\tex\latex\blindtext\blindtext.sty"
+("C:\Program Files\MiKTeX 2.9\tex\latex\tools\xspace.sty"))
+No file output.aux.
+Preview: Fontsize 10pt
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsa.fd")
+("C:\Program Files\MiKTeX 2.9\tex\latex\amsfonts\umsb.fd")
+Preview: Tightpage 0 0 0 0
+[1] (output.aux) )
+Output written on output.dvi (1 page, 1608 bytes).
+Transcript written on output.log.
