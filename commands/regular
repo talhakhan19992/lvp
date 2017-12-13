@@ -1,0 +1,418 @@
+## @file   commands/regular.py
+##
+## @author Benjamin Williams <bwilliams@lincoln.ac.uk>
+## @brief  Contains functions for checking regular users.
+##
+
+#Import system modules (required)
+from discord.ext import commands
+import discord
+import random
+import time
+
+import text
+import util.clientmsg
+import util.client
+from util import check
+from util.query import SAMPInfoRequest, VCMPInfoRequest
+import util.pac
+
+import urllib.request, json;
+
+import subprocess
+import shlex
+import os
+import datetime, humanize
+
+from urllib.parse import quote
+from dateutil.relativedelta import relativedelta
+
+
+def setup(bot):
+	bot.add_cog(RegularCommands(bot));
+	
+	
+class RegularCommands:
+
+	irc_bot = None;
+	
+	def __init__(self, bot):
+		self.bot = bot;
+		
+	#-------
+	# !ips
+	#-------
+	@commands.command()
+	async def ips(self):
+		
+		await self.bot.say("Here are our current VC-MP and SA-MP server IPs:");
+		
+		em = discord.Embed();
+		em.add_field(name="SA-MP", value="`94.23.120.101:7778`");
+		em.add_field(name="VC-MP", value="`91.121.134.5:8192`");
+		
+		await self.bot.say("", embed=em);
+		
+		await self.bot.say("Visit our forums at http://littlewhiteys.co.uk/ for more information. You can use `!players` to get the amount of players too!");
+		
+		
+	#-------
+	# !spell
+	#-------
+	@commands.command()
+	async def spell(self, *text : str):
+		
+		string = "";
+		
+		tmp = await util.clientmsg.processing(self.bot);
+		
+		for word in text:
+			for char in word:
+				lowerChar = char.lower();
+				
+				if lowerChar >= 'a' and lowerChar <= 'z':
+					string += ":regional_indicator_" + lowerChar + ':';
+					
+			string += '  ';
+				
+		await self.bot.edit_message(tmp, string);
+		
+		
+	#-------
+	# !users
+	#-------
+	@commands.command(pass_context=True)
+	async def users(self, ctx):
+
+		tmp = await util.clientmsg.processing(self.bot);
+		
+		idleUsers   = [ (x.name if x.name == x.display_name else x.name + " (" + x.display_name + ")") for x in ctx.message.server.members if x.status != discord.Status.online ];
+		onlineUsers = [ (x.name if x.name == x.display_name else x.name + " (" + x.display_name + ")") for x in ctx.message.server.members if x.status == discord.Status.online ];
+		
+		onlineUsers = list(map(lambda u: "[%s]" % u, onlineUsers));
+		
+		string = ":busts_in_silhouette: **Users: ** `[%d active, %d idle, %d total]`\n" % (len(onlineUsers), len(idleUsers), len(onlineUsers) + len(idleUsers));
+		string += "```Ini\n";
+		
+		string += ", ".join(onlineUsers);
+		string += " | ";
+		string += ", ".join(idleUsers);
+		
+		string += "\n```";
+		
+		await self.bot.edit_message(tmp, string);
+	
+	#-----------
+	# !pacstats
+	#-----------
+	@commands.command(pass_context=True)
+	async def pacstats(self, ctx, *text : str):
+	
+		pac_id = " ".join(text);
+		
+		try:
+			stats = util.pac.stats(pac_id);
+			
+			if len(stats) == 1:
+				await self.bot.edit_message(tmp, "There are no stats to display for %s. " % stats['In-game name']);
+			else:
+				url = "https://pacommunity.co.uk/server/15/profile/%s" % pac_id;
+			
+				if not ('In-game name' in stats):
+					stats['In-game name'] = stats['name'];
+				
+				keys = ['Kills', 'Deaths', 'Suicides', 'Headshots', 'Drowns', 'Joins', 'Player heals', 'Cash earnt'];
+				
+				for key in keys:
+					if not (key in stats):
+						stats[key] = "0";
+					
+				description = "%s has played since %s, has played for a total of **%s**" % (stats['In-game name'], stats['Member since'], stats['playtime']);
+			
+				if 'Online' in stats:
+					description += ", and is currently **online**. ";
+				else:
+					description += ", and is currently *offline*. They were last online %s. " % (stats['Last online']); 
+					
+				description += "The username of %s is '%s'." % (stats['In-game name'], stats['name']);
+				
+				em = discord.Embed(title=stats['In-game name'], description=description, url=url);
+				em.set_thumbnail(url=stats['avatar']);
+				
+				await self.bot.send_message(ctx.message.channel, embed=em);
+				
+				em = discord.Embed();
+				
+				ratio = 1;
+				
+				if int(stats['Deaths'] == 0):
+					ratio = int(stats['Kills']) / 1;
+				else:
+					ratio = int(stats['Kills']) / int(stats['Deaths']);
+					
+				em.add_field(name="Kills", value=str(stats['Kills']), inline=True);
+				em.add_field(name="Deaths", value=str(stats['Deaths']), inline=True);
+				em.add_field(name="Ratio", value="%.1f" % ratio, inline=True);
+				
+				em.add_field(name="Suicides", value=str(stats['Suicides']), inline=True);
+				em.add_field(name="Drowns", value=str(stats['Drowns']), inline=True);
+				em.add_field(name="Headshots", value=str(stats['Headshots']), inline=True);
+				
+				await self.bot.send_message(ctx.message.channel, embed=em);
+				
+				em = discord.Embed();
+				em.add_field(name="Joins", value=str(stats['Joins']), inline=True);
+				em.add_field(name="Player heals", value=str(stats['Player heals']), inline=True);
+				em.add_field(name="Cash earnt", value=str(stats["Cash earnt"]), inline=True);
+				
+				#await self.bot.send_message(ctx.message.channel, " ", embed=em);
+				#em = discord.Embed();
+				
+				emojis = [":negative_squared_cross_mark:",":white_check_mark:"];
+				donatorStr  = emojis[int(stats['Donator'])];
+				locationStr = emojis[int(stats['Location Enabled'])];
+				statsStr    = emojis[int(stats['Stats Enabled'])];
+				
+				em.add_field(name="Is donator?", value=donatorStr, inline=True);
+				em.add_field(name="Location enabled?", value=locationStr, inline=True);
+				em.add_field(name="Stats enabled?", value=statsStr, inline=True);
+				em.set_footer(text="Full profile at %s" % url);
+				await self.bot.send_message(ctx.message.channel, embed=em);
+				#await self.bot.send_message(ctx.message.channel, );
+			
+		except Exception as e:
+			await self.bot.send_message(ctx.message.channel, "%s" % str(e));
+			#await self.bot.edit_message(tmp, ":warning: **ERROR:** That PAC ID is not valid.. silly! :confused:");
+	
+	#-----------
+	# !pacprofile
+	#-----------
+	@commands.command(pass_context=True)
+	async def pacprofile(self, ctx, *text : str):
+	
+		tmp = await util.clientmsg.processing(self.bot);
+		
+		pac_id = " ".join(text);
+		
+		url = "https://pacommunity.co.uk/server/15/profile/%s" % pac_id;
+		
+		await self.bot.edit_message(tmp, url);
+	
+	#-----------
+	# !pacsearch
+	#-----------
+	@commands.command(pass_context=True)
+	async def pacsearch(self, ctx, *text : str):
+		
+		tmp = await util.clientmsg.processing(self.bot);
+		
+		string = " ".join(text);
+		
+		results = util.pac.search(string);
+		players = results.get_players();
+
+		if len(players) == 0:
+			await self.bot.edit_message(tmp, ":warning: **ERROR:** No players found matching that name! :confused:");
+		else:
+			results = ", ".join([str(x) for x in players]);
+			await self.bot.edit_message(tmp, "I found **%d** players:\n```css\n%s\n```" % (len(players), results));
+	#-------
+	# !stats
+	#-------
+	@commands.command(pass_context=True)
+	async def stats(self, ctx, *text : str):	
+	
+		header = { 
+			"Referer"   : "http://littlewhiteys.co.uk/",
+			"User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:48.0) Gecko/20100101 Firefox/48.0"
+		};
+		
+		text = " ".join(text);
+		lwurl = ("http://pass.littlewhiteys.co.uk/stats/stats.php?name=%s" % text);
+		
+		# try:
+		request = urllib.request.Request(url=lwurl , headers=header);	
+		response = urllib.request.urlopen(request, timeout=3);
+		
+		body = response.read();
+		
+		data = json.loads(body.decode('utf-8'));
+		
+		if 'error' in data:
+			await self.bot.send_message(ctx.message.channel, ":warning: **ERROR:** That user doesn't exist! :confused:");
+		else:
+			
+			em = discord.Embed();
+			
+			kills  = int(data['kills']);
+			deaths = int(data['deaths']);
+			
+			if deaths == 0:
+				deaths = 1;
+			
+			ratio = kills / deaths;
+			ratioStr = "%.2f" % ratio;
+			
+			choices = [":negative_squared_cross_mark:", ":white_check_mark:"]
+			
+			register_str = humanize.naturaldate(datetime.datetime.fromtimestamp(data['register']));
+			
+			attrs = ['years', 'months', 'days', 'hours', 'minutes', 'seconds']
+			human_readable = lambda delta: ['%d %s' % (getattr(delta, attr), getattr(delta, attr) > 1 and attr or attr[:-1]) for attr in attrs if getattr(delta, attr)];
+			
+			playtime = " ".join(human_readable(relativedelta(seconds=data['playtime'])));
+
+			em.add_field(name="Kills", value=str(data['kills']), inline=True);
+			em.add_field(name="Deaths", value=str(data['deaths']), inline=True);
+			em.add_field(name="Ratio", value=ratioStr, inline=True);
+			em.add_field(name="Donator?", value=(choices[int(data['Donator'])]), inline=True);
+			em.add_field(name="Admin?", value=(choices[int(data['level'] > 0)]), inline=True);
+			em.add_field(name="In gang?", value=(choices[int(data['gang'] > 0)]), inline=True);
+			await self.bot.send_message(ctx.message.channel, "Statistics for '*%s*'" % data['name'], embed=em);
+			
+			em = discord.Embed();
+			em.add_field(name="Registered", value=register_str, inline=True);
+			em.add_field(name="Playtime", value=playtime, inline=True);
+			await self.bot.send_message(ctx.message.channel, " ", embed=em);
+			
+		
+		# except Exception:
+			# await self.bot.send_message(ctx.message.channel, "Something went wrong.. maybe the stats site is offline? :thinking:")
+	
+	#-------
+	# !say
+	#-------
+	@commands.command(pass_context=True)
+	async def say(self, ctx, *text : str):
+		
+		string = " ".join(text);
+		
+		if len(str) >= 100:
+                        await self.bot.send_message(channel, "Very lengthy...");
+                        return
+                
+		messageString = "!msgex 4ddbff * " + ctx.message.author.display_name + " on Discord: " + string;
+			
+		RegularCommands.irc_bot.message("#lw.samp.echo", messageString);
+		
+		discord_msg = ":speech_balloon:      **%s on Discord:** %s" % (ctx.message.author.display_name, string);
+		
+		await self.bot.send_message(ctx.message.channel, discord_msg);
+
+	#-------
+	# !me
+	#-------
+	@commands.command(pass_context=True)
+	async def me(self, ctx, *text : str):
+		
+		string = " ".join(text);
+		
+		if len(str) >= 100:
+                        await self.bot.send_message(channel, "Very lengthy...");
+                        return
+                
+		messageString = "!msgex C42890 [Discord] " + ctx.message.author.display_name + " " + string;
+			
+		RegularCommands.irc_bot.message("#lw.samp.echo", messageString);
+		
+		discord_msg = ":speech_balloon:      **[Discord] %s %s**" % (ctx.message.author.display_name, string);
+		
+		await self.bot.send_message(ctx.message.channel, discord_msg);
+	
+		
+	#-------
+	# !adventuretime
+	#-------
+	@commands.command(pass_context=True)
+	async def adventuretime(self, ctx):
+		
+		em = discord.Embed();
+		em.set_image(url="http://www.indiewire.com/wp-content/uploads/2013/10/adventure-time.png");
+			
+		await self.bot.send_message(ctx.message.channel, "", embed=em);
+		
+	def build_latex(self, str):
+		#str = str.replace("\\", "\\\\");
+		str = str.replace("\\", "\\\\");
+		
+		process = subprocess.Popen(shlex.split('bash job.sh \'%s\'' % str));
+		process.wait();
+	
+	
+	#-------
+	# !players
+	#-------
+	@commands.command(pass_context=True)
+	async def players(self, ctx):
+		
+		vcmp_request = VCMPInfoRequest("91.121.134.5", 8192);
+		samp_request = SAMPInfoRequest("94.23.120.101", 7778);
+
+		if not vcmp_request.error:
+			vcmp_str = "%d/%d players" % (vcmp_request.players, vcmp_request.max_players);
+		else:
+			vcmp_str = ":warning: Couldn't retrieve player count";
+			
+		if not samp_request.error:
+			samp_str = "%d/%d players" % (samp_request.players, samp_request.max_players);
+		else:
+			samp_str = ":warning: Couldn't retrieve player count";
+		
+		tmp = await util.clientmsg.processing(self.bot);
+		
+		em = discord.Embed();
+		em.add_field(name="SA-MP Server", value=samp_str, inline=True);
+		em.add_field(name="VC-MP Server", value=vcmp_str, inline=True);
+		
+		await self.bot.edit_message(tmp, "Player counts for littlewhitey's VC-MP and SA-MP servers:", embed=em);
+		# await self.bot.send_message(ctx.message.channel, "If you wish to find the IPs of these servers, type `!ips`.");
+			
+	
+	
+	#-------
+	# !latex
+	#-------
+	@commands.command(pass_context=True)
+	async def latex(self, ctx,  *text : str):
+		
+		msg = " ".join(text);
+		
+		os.chdir("latex");
+			
+		self.build_latex(msg);
+		await self.bot.send_file(ctx.message.channel, "output1.png");
+		
+		os.chdir("..");
+		
+		#await self.bot.send_message(ctx.message.channel, "hello hello");
+		
+		# msg = "%20".join(text);
+		
+		# em = discord.Embed();
+		
+		# url = "https://latex.codecogs.com/png.latex?%5Cdpi%7B300%7D%20%5Clarge%20%5Ccolor%7BWhite%7D%7B" + (msg) + "%7D";
+		
+		# em.set_image(url=url);
+		
+		# await self.bot.send_message(ctx.message.channel, "", embed=em);
+		
+		
+			
+		
+	#-------
+	# !smiley
+	#-------
+	@commands.command(pass_context=True)
+	async def smiley(self, ctx,  *text : str):
+		
+		msg = "%20".join( text );
+
+		em = discord.Embed();
+		
+		url = "https://latex.codecogs.com/png.latex?%5Cdpi%7B300%7D%20%5Clarge%20%5Ccolor%7BWhite%7D%7B%5Cwidetilde%7B%5Coverset%7B%5E%7B%5Ccirc%7D%20%5Cscriptscriptstyle%7B%5Ccup%7D%20%5E%7B%5Ccirc%7D%7D%7B%5Csmile%7D%7D%20%5Cqquad%20%5Cscriptscriptstyle%7B%5Ctextsc%7B" + (msg) + "%7D%7D%7D";
+		
+		em.set_image(url=url);
+		
+		await self.bot.send_message(ctx.message.channel, "", embed=em);
+		
+	
